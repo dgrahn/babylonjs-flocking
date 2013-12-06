@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI/CG Flocking Simulator Term Project</title>
+  
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css"/>
+  
+  <style type="text/css">
+    html, body, canvas {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+    
+    nav.navbar {
+      margin-bottom: 0;
+    }
+    
+    .dropdown-menu li {
+      padding: 0.5em;
+    }
+    
+    li.divider {
+      padding: 0;
+    }
+    
+    li.input-group .input-group-addon {
+      width: 10.5em;
+      text-align: right;
+    }
+    
+    li.input-group .form-control {
+      width: 10em;
+    }
+    
+  </style>
+  
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="js/lib/bootstrap.js"></script>
+  <script type="text/javascript" src="js/lib/babylon.1.6.0.js"></script>
+  <script type="text/javascript" src="js/lib/hand-1.2.js"></script>
+  <script type="text/javascript" src="js/bird.js"></script>
+  <script type="text/javascript" src="js/scene.js"></script>
+</head>
+<body>
+  
+  <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="navbar-brand">Flocking Simulator</div>
+    
+    <ul class="nav navbar-nav">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Birds <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li class="input-group">
+            <span class="input-group-addon">Count</span>
+            <input type="number" class="form-control" name="bird_count" value="40"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Max Velocity</span>
+            <input type="number" class="form-control" name="bird_max_velocity" value="0.1"/>
+          </li>
+          
+          <li class="divider"></li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Align Distance</span>
+            <input type="number" class="form-control" name="bird_align_neighbourhood" value="20"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Align Weight</span>
+            <input type="number" class="form-control" name="bird_align_weight" value="0.5"/>
+          </li>
+          
+          <li class="divider"></li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Cohesion Distance</span>
+            <input type="number" class="form-control" name="bird_cohesion_neighbourhood" value="20"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Cohesion Weight</span>
+            <input type="number" class="form-control" name="bird_cohesion_weight" value="1.0"/>
+          </li>
+          
+          <li class="divider"></li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Separate Distance</span>
+            <input type="number" class="form-control" name="bird_separate_neighbourhood" value="4"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Separate Weight</span>
+            <input type="number" class="form-control" name="bird_separate_weight" value="2.0"/>
+          </li>
+
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hawks <b class="caret"></b></a>
+        <ul class="dropdown-menu">         
+          <li class="input-group">
+            <span class="input-group-addon">Count</span>
+            <input type="number" class="form-control" name="hawk_count" value="5"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Max Velocity</span>
+            <input type="number" class="form-control" name="hawk_max_velocity" value="0.1"/>
+          </li>
+          
+          <li class="divider"></li>
+                    
+          <li class="input-group">
+            <span class="input-group-addon">Separate Distance</span>
+            <input type="number" class="form-control" name="hawk_separate_neighbourhood" value="10"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Separate Weight</span>
+            <input type="number" class="form-control" name="hawk_separate_weight" value="3.0"/>
+          </li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Environment <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li class="input-group">
+            <span class="input-group-addon">Max Speed</span>
+            <input type="number" class="form-control" name="max_speed" value="0.15"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Max Force</span>
+            <input type="number" class="form-control" name="max_force" value="0.01"/>
+          </li>
+          
+          <li class="divider"></li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Min</span>
+            <input type="number" class="form-control" name="min" value="-20"/>
+          </li>
+          
+          <li class="input-group">
+            <span class="input-group-addon">Max</span>
+            <input type="number" class="form-control" name="max" value="20"/>
+          </li>
+          
+          <li class="divider"></li>
+          
+          <li>
+            <button type="button" class="btn btn-default" id="restart">Restart</button>
+          </li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Boundary <b class="caret"></b></a>
+        <ul class="dropdown-menu modes">
+          <li class="active"><a href="#wrap">Wrap</a></li>
+          <li><a href="#trim">Trim</a></li>
+          <li><a href="#none">None</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <canvas id="renderCanvas"></canvas>
+</body>
+</html>
